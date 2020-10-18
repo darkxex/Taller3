@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1602994330 source:c:\respaldo2017\c++\utem\taller3\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<math.h>
+	<string>
+	<vector>
+	<stdio.h>
+	<omp.h>
+
