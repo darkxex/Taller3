@@ -7,7 +7,9 @@
 #include <vector>
 #include <stdio.h>
 #include <omp.h>
-
+#include <iostream>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 void replace(std::string& subject, const std::string& search,
@@ -41,17 +43,25 @@ float distancia(float longitud1,float longitud2, float latitud1,float latitud2 )
     return resultado;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+        if(argv[1] == NULL)
+
+        {
+            cout<<"Por favor, ingresa los parametros, ej: aplicacion \"ruta/equipos.csv\" \"ruta/resultado.csv\" "<<endl;
+        }
+     vector <string>distancias;
+    vector <string>local;
+    vector <string>visitante;
 #pragma omp parallel
 {printf("Hello from thread %d, nthreads %d\n", omp_get_thread_num(), omp_get_num_threads());}
-
+string temporal = "";
    float iniciallatitud = 0;
 
     float iniciallongitud = 0;
     vector <string> equipos;
    string line;
-  ifstream myfile ("C:/Users/darkx/Desktop/taller03/equipos.csv");
+  ifstream myfile (argv[1]);
   if (myfile.is_open())
   {equipos.clear();
     while ( getline (myfile,line) )
@@ -65,42 +75,70 @@ int main()
     }
     myfile.close();
 
+
     //implementar omp
+
+
 
  #pragma omp paralell
      {
-        #pragma omp for
+    #pragma omp for
  for (int x = 0; x < equipos.size(); x++)
- {  cout<<"--------------------equipo: "<< x +1 <<endl;
+ {  string temporallocal = "";
+     //cout<<"--------------------equipo: "<< x +1 <<endl;
      //inside
 vector <string > datos = split(equipos[x],";");
+
 iniciallatitud = stod(datos[3]);
           iniciallongitud = stod(datos[4]);
 
      for (int i = 0; i < equipos.size(); i++)
   {
-      vector <string > datos = split(equipos[i],";");
- cout << datos[0]<<endl;
+local.push_back(datos[0]);
+      vector <string > datos2 = split(equipos[i],";");
+ //cout << datos2[0]<<endl;
+ temporal = temporal + datos2[0] + "\n";
+visitante.push_back(datos2[0]);
+     float latitudtemporal = stof(datos2[3]);
+    float longitudtemporal = stof(datos2[4]);
 
-     float latitudtemporal = stof(datos[3]);
-    float longitudtemporal = stof(datos[4]);
-
-
-      cout << i<<" distancia: "<< distancia(iniciallongitud,longitudtemporal,iniciallatitud,latitudtemporal)<<"\n";
+       float temp = distancia(iniciallongitud,longitudtemporal,iniciallatitud,latitudtemporal);
+    distancias.push_back(std::to_string (temp));
+      //cout << i<<" distancia: "<< temp<<"\n";
+       temporal = temporal + std::to_string (temp) +"\n";
 //cout <<"depuracion: "<< " "<<iniciallongitud<< " "<<longitudtemporal<< " "<<iniciallatitud<< " "<<latitudtemporal<<"\n";
 
            iniciallatitud =latitudtemporal;
            iniciallongitud = longitudtemporal;
          }
-         cout << "--------------------------------------------------------------------------------------"<<endl;
-
+        // cout << "--------------------------------------------------------------------------------------"<<endl;
+        temporal = temporal + "----------------------------------------\n";
 
   }
 
   }
  }
 
+ofstream myfile2 (argv[2]);
+  if (myfile2.is_open())
+  {
+int jornada = 1;
+    myfile2 << "\"Jornada\";\"Equipo Local\";\"Equipo Visitante\";\"Distancia\"\n";
+    //myfile2 << temporal;
+    for(int j=0;j<distancias.size();j++){
 
+int a = jornada;
+stringstream ss;
+ss << a;
+string str = ss.str();
+        myfile2<< "Jornada " + str + ";"  + local[j] + ";" +  visitante[j] + ";" +distancias[j] ;
+        myfile2<<"\n";
+     jornada++;
+     if (jornada == 19)
+        jornada = 1;
+    }
+    myfile2.close();
+  }
 
   else cout << "Unable to open file";
 
