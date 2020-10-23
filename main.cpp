@@ -10,6 +10,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#define R 6371
+#define TO_RAD (3.1415926536 / 180)
+
 using namespace std;
 
 void replace(std::string& subject, const std::string& search,
@@ -43,22 +46,19 @@ float distancia2(float longitud1,float longitud2, float latitud1,float latitud2 
     return resultado;
 }
 
-float distancia(float lonHome, float lonDest, float latHome, float latDest ) {
+float distancia( float lenght1, float lenght2,float latitude1, float latitude2)
+{
+	float dx, dy, dz;
+	lenght1 -= lenght2;
+	lenght1 *= TO_RAD, latitude1 *= TO_RAD, latitude2 *= TO_RAD;
 
-    float pi = 3.141592653589793;
-    int R = 6371; //Radius of the Earth
-    latHome = (pi/180)*(latHome);
-    latDest = (pi/180)*(latDest);
-    float differenceLon = (pi/180)*(lonDest - lonHome);
-    float differenceLat = (pi/180)*(latDest - latHome);
-    float a = sin(differenceLat/2) * sin(differenceLat/2) +
-    cos(latHome) * cos(latDest) *
-    sin(differenceLon/2) * sin(differenceLon/2);
-    float c = 2 * atan2(sqrt(a), sqrt(1-a));
-    float distance = R * c;
-
-    return distance;
+	dz = sin(latitude1) - sin(latitude2);
+	dx = cos(lenght1) * cos(latitude1) - cos(latitude2);
+	dy = sin(lenght1) * cos(latitude1);
+	return asin(sqrt(dx * dx + dy * dy + dz * dz) / 2) * 2 * R;
 }
+
+
 
 int main(int argc, char** argv)
 {
