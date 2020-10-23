@@ -36,11 +36,28 @@ vector<string> split (string s, string delimiter) {
     return res;
 }
 
-float distancia(float longitud1,float longitud2, float latitud1,float latitud2 )
+float distancia2(float longitud1,float longitud2, float latitud1,float latitud2 )
 {
     float resultado = pow((longitud2 - longitud1),2) + pow((latitud2 - latitud1),2);
     resultado = sqrt(resultado);
     return resultado;
+}
+
+float distancia(float lonHome, float lonDest, float latHome, float latDest ) {
+
+    float pi = 3.141592653589793;
+    int R = 6371; //Radius of the Earth
+    latHome = (pi/180)*(latHome);
+    latDest = (pi/180)*(latDest);
+    float differenceLon = (pi/180)*(lonDest - lonHome);
+    float differenceLat = (pi/180)*(latDest - latHome);
+    float a = sin(differenceLat/2) * sin(differenceLat/2) +
+    cos(latHome) * cos(latDest) *
+    sin(differenceLon/2) * sin(differenceLon/2);
+    float c = 2 * atan2(sqrt(a), sqrt(1-a));
+    float distance = R * c;
+
+    return distance;
 }
 
 int main(int argc, char** argv)
@@ -49,6 +66,7 @@ int main(int argc, char** argv)
 
         {
             cout<<"Por favor, ingresa los parametros, ej: aplicacion \"ruta/equipos.csv\" \"ruta/resultado.csv\" "<<endl;
+
         }
      vector <string>distancias;
     vector <string>local;
